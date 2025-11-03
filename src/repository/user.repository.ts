@@ -8,7 +8,7 @@ import { IUserRepository } from "./interface/IUserrepository";
 export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaClient) {}
 
-    async create(user: User): Promise<User> {
+  async create(user: User): Promise<User> {
     const data = UserMapper.toPrisma(user);
     const created = await this.prisma.user.create({ data });
     return UserMapper.toDomain(created);
@@ -20,10 +20,13 @@ export class UserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-    });
-    return user ? UserMapper.toDomain(user): null;
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    return user ? UserMapper.toDomain(user) : null;
+  }
+
+  async findByEmail(email: string): Promise<User | null> { 
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    return user ? UserMapper.toDomain(user) : null;
   }
 
   async update(user: User): Promise<User> {
@@ -35,8 +38,6 @@ export class UserRepository implements IUserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({
-      where: { id },
-    });
+    await this.prisma.user.delete({ where: { id } });
   }
 }

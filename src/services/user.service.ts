@@ -15,23 +15,24 @@ export class UserService {
     private readonly userRepository: IUserRepository
   ) {}
 
-  async create(data: User) {
-    const parsedData = createUserSchema.parse({ body: data }).body;
+async create(data: { name: string; email: string; password: string }) {
+  const parsedData = createUserSchema.parse({ body: data }).body;
 
-    const existingUser = await this.userRepository.findById(parsedData.email);
-    if (existingUser) {
-      throw new Error("User with this email already exists");
-    }
-
-    const user = new User({
-      id: crypto.randomUUID(),
-      name: parsedData.name,
-      email: parsedData.email,
-      password: parsedData.password,
-    });
-
-    return this.userRepository.create(user);
+  const existingUser = await this.userRepository.findByEmail(parsedData.email);
+  if (existingUser) {
+    throw new Error("User with this email already exists");
   }
+
+  const user = new User({
+    id: crypto.randomUUID(),
+    name: parsedData.name,
+    email: parsedData.email,
+    password: parsedData.password,
+  });
+
+  return this.userRepository.create(user);
+}
+
 
   async findAll() {
     return this.userRepository.findAll();
@@ -44,6 +45,12 @@ export class UserService {
     if (!user) throw new Error("User not found");
     return user;
   }
+
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    return user;
+  }
+
 
   async update(id: string, userData: Partial<User>) {
     const parsed = updateUserSchema.parse({ params: { id }, body: userData });
