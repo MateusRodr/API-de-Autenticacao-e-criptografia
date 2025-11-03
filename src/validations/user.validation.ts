@@ -9,6 +9,9 @@ export const createUserSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
+  params: z.object({
+    id: z.string().uuid("Invalid user ID"),
+  }),
   body: z.object({
     name: z.string().min(3).optional(),
     email: z.string().email().optional(),
@@ -26,4 +29,4 @@ export const deleteUserSchema = z.object({
   params: z.object({
     id: z.string().uuid("Invalid user ID"),
   }),
-}); 
+});

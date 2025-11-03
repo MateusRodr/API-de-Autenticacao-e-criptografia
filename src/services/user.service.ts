@@ -1,53 +1,70 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { User } from "../entity/user.entity";
-import { getUserSchema,createUserSchema,deleteUserSchema,updateUserSchema } from "../validations/user.validation";
+import { 
+  getUserSchema, 
+  createUserSchema, 
+  deleteUserSchema, 
+  updateUserSchema 
+} from "../validations/user.validation";
+import { IUserRepository } from "../repository/interface/IUserrepository";
 
 @Injectable()
 export class UserService {
   constructor(
-    private userRepository: typeof User
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository
   ) {}
 
-
-  async create(data:User) {
+  async create(data: User) {
     const parsedData = createUserSchema.parse({ body: data }).body;
-    const userexists = await this.userRepository.findOne({ where: { email: parsedData.email } }) as any;
-    if (userexists) {
+
+    const existingUser = await this.userRepository.findById(parsedData.email);
+    if (existingUser) {
       throw new Error("User with this email already exists");
     }
+
     const user = new User({
       id: crypto.randomUUID(),
       name: parsedData.name,
       email: parsedData.email,
       password: parsedData.password,
-    })
+    });
+
     return this.userRepository.create(user);
   }
 
-
-  async findAll(){
-    const users = await this.userRepository.findAll();
+  async findAll() {
     return this.userRepository.findAll();
   }
 
   async findById(id: string) {
-    const user = getUserSchema.parse({ params: { id } }).params;
-    if (!user) throw new Error('User not found');
-    return this.userRepository.findByPk(id);
+    const parsed = getUserSchema.parse({ params: { id } });
+    const user = await this.userRepository.findById(parsed.params.id);
+
+    if (!user) throw new Error("User not found");
+    return user;
   }
 
-  async update(id: string, user: User) {
-    const parsedParams = updateUserSchema.parse({ params: { id }, body: user });
-    const existing = await this.userRepository.findByPk(parsedParams.id);
+  async update(id: string, userData: Partial<User>) {
+    const parsed = updateUserSchema.parse({ params: { id }, body: userData });
+    const existing = await this.userRepository.findById(parsed.params.id);
+
     if (!existing) {
       throw new Error("User not found");
     }
-    const updatedUser = new User(parsedParams.body);
-    return this.userRepository.update(updatedUser, { where: { id: parsedParams.id } });
+
+    const updatedUser = new User({
+      id: existing.id,
+      name: parsed.body.name ?? existing.getName(),
+      email: parsed.body.email ?? existing.getEmail(),
+      password: parsed.body.password ?? existing.getPassword(),
+    });
+
+    return this.userRepository.update(updatedUser);
   }
 
   async delete(id: string) {
-    const parsedParams = deleteUserSchema.parse({ params: { id } }).params;
-    return this.userRepository.delete({ where: { id: parsedParams.id } });
+    const parsed = deleteUserSchema.parse({ params: { id } });
+    await this.userRepository.delete(parsed.params.id);
   }
 }
