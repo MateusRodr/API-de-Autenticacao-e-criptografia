@@ -3,6 +3,8 @@
     "target": "ES2018",
     "module": "CommonJS",
     "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
