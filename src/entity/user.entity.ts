@@ -6,7 +6,6 @@ export interface userProps {
 }
 
 export class User {
-
     private props: userProps;
     public readonly id?: string;
 

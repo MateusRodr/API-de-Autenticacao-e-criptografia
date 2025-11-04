@@ -7,6 +7,7 @@ import {
   updateUserSchema 
 } from "../validations/user.validation";
 import { IUserRepository } from "../repository/interface/IUserrepository";
+import {UpdateUserDTO } from "../dtos/user.dto";
 
 @injectable()
 export class UserService {
@@ -51,7 +52,7 @@ async create(data: { name: string; email: string; password: string }) {
   }
 
 
-  async update(id: string, userData: Partial<User>) {
+  async update(id: string, userData: UpdateUserDTO): Promise<User> {
     const parsed = updateUserSchema.parse({ params: { id }, body: userData });
     const existing = await this.userRepository.findById(parsed.params.id);
 
