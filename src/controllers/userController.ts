@@ -1,6 +1,7 @@
 import { container } from 'tsyringe';
 import { RequestHandler } from 'express';
 import { UserService } from '../services/user.service';
+import { z } from 'zod';
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
@@ -31,16 +32,49 @@ export const createUser: RequestHandler = async (req, res) => {
       token,
     });
   } catch (error: any) {
-    console.error('Erro ao criar usuário:', error);
-    res.status(500).json({ error: 'Erro ao criar usuário', details: error.message });
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Validation error', details: error.issues });
+    } else {
+      res.status(500).json({ error: error.message});
+    }
   }
 };
 
-export const getAll: RequestHandler = async (req, res) => {
+export const getAllUsers: RequestHandler = async (req, res) => {
   try {
     const users = await userService.findAll();
     res.json({ users });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar usuários' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };
+
+export const getUserById: RequestHandler = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await userService.findById(id);
+      res.json({ user });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+}
+
+export const updateUser: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = await userService.update(id, req.body);
+    res.json({ user: updatedData });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export const deleteUser: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await userService.delete(id);
+    res.status(204).send();
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}

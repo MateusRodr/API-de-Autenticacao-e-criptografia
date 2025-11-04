@@ -6,3 +6,4 @@ import { IUserRepository } from '../repository/interface/IUserrepository';
 
 container.registerInstance(PrismaClient, new PrismaClient());
 container.registerSingleton<IUserRepository>('IUserRepository', UserRepository);
+container.registerSingleton<UserService>('UserService', UserService);
