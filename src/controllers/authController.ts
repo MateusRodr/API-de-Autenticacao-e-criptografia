@@ -17,9 +17,9 @@ export const authMiddlewares: RequestHandler = async (req, res, next) => {
   const [, token] = authorization.split(" ");
 
   try {
-    const decoded = verify(token, "secret") as TokenPayload;
-    req.userId = decoded.id; 
-    next();
+    const decoded = verify(token, process.env.JWT_SECRET!) as TokenPayload;
+    (req as any).userId = decoded.id;
+    return next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid token" });
   }

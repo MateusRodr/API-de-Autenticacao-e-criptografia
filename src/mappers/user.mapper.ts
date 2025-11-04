@@ -1,5 +1,5 @@
 import { User } from "../entity/user.entity";
-import { User as PrismaUser } from "@prisma/client"
+import { Prisma, User as PrismaUser } from "@prisma/client"
 
 export class UserMapper {
     static toDomain(raw: PrismaUser): User {
@@ -11,9 +11,9 @@ export class UserMapper {
         });
     }
 
-    static toPrisma(user: User): PrismaUser {
+    static toPrisma(user: User): Prisma.UserCreateInput {
         return {
-            id: user.id,
+            id: user.id!,
             email: user.getEmail(),
             name: user.getName(),
             password: user.getPassword()

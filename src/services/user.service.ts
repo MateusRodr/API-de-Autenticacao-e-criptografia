@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { inject, injectable } from "tsyringe";
 import { User } from "../entity/user.entity";
 import { 
   getUserSchema, 
@@ -8,10 +8,10 @@ import {
 } from "../validations/user.validation";
 import { IUserRepository } from "../repository/interface/IUserrepository";
 
-@Injectable()
+@injectable()
 export class UserService {
   constructor(
-    @Inject('IUserRepository')
+    @inject('IUserRepository')
     private readonly userRepository: IUserRepository
   ) {}
 
@@ -32,7 +32,6 @@ async create(data: { name: string; email: string; password: string }) {
 
   return this.userRepository.create(user);
 }
-
 
   async findAll() {
     return this.userRepository.findAll();

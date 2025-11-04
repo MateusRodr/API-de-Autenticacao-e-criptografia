@@ -1,5 +1,5 @@
 export interface userProps {
-    id: string;
+    id?: string;
     email: string;
     name: string;
     password: string;
@@ -8,7 +8,7 @@ export interface userProps {
 export class User {
 
     private props: userProps;
-    public readonly id: string;
+    public readonly id?: string;
 
     constructor(props: userProps) {
         this.props = props;

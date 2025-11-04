@@ -14,14 +14,14 @@ export const createUser: RequestHandler = async (req, res) => {
 
     const userExists = await userService.findByEmail(email);
     if (userExists) {
-      return res.status(400).json({ error: 'Usuário já cadastrado com este email.' });
+      return res.status(400).json({ error: 'User already exists with this email.' });
     }
 
     const hash_password = await hash(password, 8);
 
     const newUser = await userService.create({ name, email, password: hash_password });
 
-    const token = sign({ id: newUser.id }, "secret", { expiresIn: '1d' });
+    const token = sign({ id: newUser.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
 
     return res.status(201).json({
       user: {
@@ -53,7 +53,10 @@ export const getUserById: RequestHandler = async (req, res) => {
     try {
       const { id } = req.params;
       const user = await userService.findById(id);
-      res.json({ user });
+      if (!user) {
+    return res.status(404).json({ error: "User not found" });
+      }
+    return res.json({ user });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

@@ -6,8 +6,8 @@ import { authMiddleware } from "../middlewares/auth";
 export const router = Router();
 
 router.post('/create', createUser);
-router.post('/auth', authMiddlewares);
-router.get('/users', authMiddleware, getAllUsers);
-router.get('/users/:id', authMiddleware, getUserById);
-router.put('/users/:id', authMiddleware, updateUser);
-router.delete('/users/:id', authMiddleware, deleteUser);
+
+router.get('/users', authMiddlewares, getAllUsers);
+router.get('/users/:id', authMiddlewares, getUserById);
+router.put('/users/:id', authMiddlewares, updateUser);
+router.delete('/users/:id', authMiddlewares, deleteUser);
