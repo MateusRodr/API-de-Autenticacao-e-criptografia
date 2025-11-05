@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+
+  apitoken:
+    build: .
+    container_name: apitoken
+    ports:
+      - "3312:3113"
+    env_file:
+      - .env
+    volumes:
+      - ./apiToken:/usr/src/app
+    command: npm start

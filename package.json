@@ -10,7 +10,8 @@
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
     "tsc": "^2.0.4",
-    "tsyringe": "^4.10.0"
+    "tsyringe": "^4.10.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -27,8 +28,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest",
-    "dev": "ts-node-dev --respawn --transpile-only --files src/server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only --files src/server.ts",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
