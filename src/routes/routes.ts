@@ -44,7 +44,7 @@ const router = Router();
  *       400:
  *         description: Validation error or user already exists
  */
-router.post("/register", createUser);
+router.post("/users", createUser);
 
 /**
  * @swagger
@@ -71,7 +71,7 @@ router.post("/register", createUser);
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", login);
+router.post("/auth/login", login);
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.post("/login", login);
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
-router.get("/", authMiddleware, getAllUsers);
+router.get("/auth/users", authMiddleware, getAllUsers);
 
 /**
  * @swagger
@@ -110,7 +110,7 @@ router.get("/", authMiddleware, getAllUsers);
  *       404:
  *         description: User not found
  */
-router.get("/:id", authMiddleware, getUserById);
+router.get("/auth/users/:id", authMiddleware, getUserById);
 
 /**
  * @swagger
@@ -148,7 +148,7 @@ router.get("/:id", authMiddleware, getUserById);
  *       404:
  *         description: User not found
  */
-router.put("/:id", authMiddleware, updateUser);
+router.put("/auth/users/:id", authMiddleware, updateUser);
 
 /**
  * @swagger
@@ -170,6 +170,6 @@ router.put("/:id", authMiddleware, updateUser);
  *       404:
  *         description: User not found
  */
-router.delete("/:id", authMiddleware, deleteUser);
+router.delete("/auth/users/:id", authMiddleware, deleteUser);
 
 export default router;
