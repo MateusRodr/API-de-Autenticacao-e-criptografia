@@ -4,150 +4,128 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
 } from "../controllers/user.Controller";
-import { authMiddlewares } from "../controllers/auth.Controller";
-
-export const router = Router();
+import { login, authMiddleware } from "../controllers/auth.Controller";
 
 /**
  * @swagger
  * tags:
  *   name: Users
- *   description: User management API
+ *   description: User management and authentication
  */
+const router = Router();
 
 /**
  * @swagger
- * /users:
+ * /users/register:
  *   post:
- *     summary: Create a new user
- *     tags:
- *       - Users
+ *     summary: Register a new user
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
  *             properties:
  *               name:
  *                 type: string
- *                 example: "John Doe"
+ *                 example: Mateus Rodrigues
  *               email:
  *                 type: string
- *                 format: email
- *                 example: "john.doe@example.com"
+ *                 example: mateus@email.com
  *               password:
  *                 type: string
- *                 format: password
- *                 example: "securepassword"
+ *                 example: 123456
  *     responses:
  *       201:
  *         description: User created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "1"
- *                 name:
- *                   type: string
- *                   example: "John Doe"
- *                 email:
- *                   type: string
- *                   example: "john.doe@example.com"
+ *       400:
+ *         description: Validation error or user already exists
  */
-router.post("/users", createUser);
+router.post("/register", createUser);
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Login and get JWT token
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: mateus@email.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login successful with token
+ *       401:
+ *         description: Invalid credentials
+ */
+router.post("/login", login);
 
 /**
  * @swagger
  * /users:
  *   get:
- *     summary: Retrieve a list of users
- *     tags:
- *       - Users
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: A list of users
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     example: "1"
- *                   name:
- *                     type: string
- *                     example: "John Doe"
- *                   email:
- *                     type: string
- *                     format: email
- *                     example: "john.doe@example.com"
+ *         description: List of all users
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
  */
-router.get("/users", authMiddlewares, getAllUsers);
+router.get("/", authMiddleware, getAllUsers);
 
 /**
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Retrieve a user by ID
- *     tags:
- *       - Users
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the user to retrieve
  *         schema:
  *           type: string
- *           example: "1"
+ *         description: User ID
  *     responses:
  *       200:
- *         description: User retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "1"
- *                 name:
- *                   type: string
- *                   example: "John Doe"
- *                 email:
- *                   type: string
- *                   example: "john.doe@example.com"
+ *         description: User found
  *       404:
  *         description: User not found
  */
-router.get("/users/:id", authMiddlewares, getUserById);
+router.get("/:id", authMiddleware, getUserById);
 
 /**
  * @swagger
  * /users/{id}:
  *   put:
- *     summary: Update a user by ID
- *     tags:
- *       - Users
+ *     summary: Update user data
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: The ID of the user to update
  *         schema:
  *           type: string
- *           example: "1"
  *     requestBody:
  *       required: true
  *       content:
@@ -157,44 +135,29 @@ router.get("/users/:id", authMiddlewares, getUserById);
  *             properties:
  *               name:
  *                 type: string
- *                 example: "John Doe Updated"
+ *                 example: Mateus Rodrigues
  *               email:
  *                 type: string
- *                 format: email
- *                 example: "john.updated@example.com"
+ *                 example: mateus@email.com
  *               password:
  *                 type: string
- *                 format: password
- *                 example: "newsecurepassword"
+ *                 example: novaSenha123
  *     responses:
  *       200:
  *         description: User updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "1"
- *                 name:
- *                   type: string
- *                   example: "John Doe Updated"
- *                 email:
- *                   type: string
- *                   example: "john.updated@example.com"
  *       404:
  *         description: User not found
  */
-router.put("/users/:id", authMiddlewares, updateUser);
+router.put("/:id", authMiddleware, updateUser);
 
 /**
  * @swagger
  * /users/{id}:
  *   delete:
- *     summary: Delete a user by ID
- *     tags:
- *       - Users
+ *     summary: Delete a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -203,8 +166,10 @@ router.put("/users/:id", authMiddlewares, updateUser);
  *           type: string
  *     responses:
  *       204:
- *         description: User deleted successfully (no content)
+ *         description: User deleted successfully
  *       404:
  *         description: User not found
  */
-router.delete("/users/:id", authMiddlewares, deleteUser);
+router.delete("/:id", authMiddleware, deleteUser);
+
+export default router;
