@@ -8,6 +8,8 @@ import {
 } from "../validations/user.validation";
 import { IUserRepository } from "../repository/interface/IUserrepository";
 import {UpdateUserDTO } from "../dtos/user.dto";
+import { ConflictError } from "../shared/errors/ConflictError";
+import { NotFoundError } from "../shared/errors/NotFoundError";
 
 @injectable()
 export class UserService {
@@ -21,7 +23,7 @@ async create(data: { name: string; email: string; password: string }) {
 
   const existingUser = await this.userRepository.findByEmail(parsedData.email);
   if (existingUser) {
-    throw new Error("User with this email already exists");
+    throw new ConflictError("User with this email already exists");
   }
 
   const user = new User({
@@ -42,7 +44,7 @@ async create(data: { name: string; email: string; password: string }) {
     const parsed = getUserSchema.parse({ params: { id } });
     const user = await this.userRepository.findById(parsed.params.id);
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new NotFoundError("User not found");
     return user;
   }
 
@@ -57,7 +59,7 @@ async create(data: { name: string; email: string; password: string }) {
     const existing = await this.userRepository.findById(parsed.params.id);
 
     if (!existing) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
 
     const updatedUser = new User({
