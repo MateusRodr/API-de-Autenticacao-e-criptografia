@@ -33,21 +33,34 @@ export const getAllUsers: RequestHandler = async (_req, res) => {
   return res.json({ users });
 };
 
-export const getUserById: RequestHandler = async (req, res) => {
+export const getUserById: RequestHandler = async (req, res, next) => {
+  try {
   const { id } = req.params;
   const user = await userService.findById(id);
   return res.json({ user });
+  } catch (error) {
+    next(error)   
+  }
+
 };
 
-export const updateUser: RequestHandler = async (req, res) => {
+export const updateUser: RequestHandler = async (req, res, next) => {
+  try {
   const { id } = req.params;
   const updatedUser = await userService.update(id, req.body);
   return res.json({ user: updatedUser });
+  } catch (error) {
+    next(error)
+  }
 };
 
-export const deleteUser: RequestHandler = async (req, res) => {
+export const deleteUser: RequestHandler = async (req, res, next) => {
+  try {
   const { id } = req.params;
   await userService.delete(id);
   return res.status(204).send();
+  } catch (error) {
+    next(error)
+  }
 };
 

@@ -37,7 +37,12 @@ async create(data: { name: string; email: string; password: string }) {
 }
 
   async findAll() {
-    return this.userRepository.findAll();
+    const users = await this.userRepository.findAll();
+
+    if(UserService.length === 0){ 
+      throw new NotFoundError("No users Found")
+    }
+    return users;
   }
 
   async findById(id: string) {
@@ -62,6 +67,13 @@ async create(data: { name: string; email: string; password: string }) {
       throw new NotFoundError("User not found");
     }
 
+    if(parsed.body.email) {
+      const emailOwner = await this.userRepository.findByEmail(parsed.body.email)
+      if(emailOwner && emailOwner.id !== existing.id) {
+        throw new ConflictError("Email already in use by another user")
+      }
+    }
+
     const updatedUser = new User({
       id: existing.id,
       name: parsed.body.name ?? existing.getName(),
@@ -74,6 +86,10 @@ async create(data: { name: string; email: string; password: string }) {
 
   async delete(id: string) {
     const parsed = deleteUserSchema.parse({ params: { id } });
+    const user = await this.userRepository.findById(parsed.params.id)
+
+    if(!user) throw new NotFoundError("User not found")
+
     await this.userRepository.delete(parsed.params.id);
   }
 }
