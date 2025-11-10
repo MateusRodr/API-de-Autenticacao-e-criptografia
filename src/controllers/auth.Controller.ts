@@ -2,22 +2,23 @@ import { RequestHandler } from "express";
 import { compare } from "bcrypt";
 import { sign, verify } from "jsonwebtoken";
 import { container } from "tsyringe";
+import { catchAsync } from "../utils/catchasync";
 import { UserService } from "../services/user.service";
+import { AppError } from "../shared/errors/appError";
 
 const userService = container.resolve(UserService);
 
-export const login: RequestHandler = async (req, res) => {
-  try {
+export const login: RequestHandler = catchAsync (async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userService.findByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      throw new AppError("Invalid credentials", 401 );
     }
 
     const passwordMatch = await compare(password, user.getPassword());
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      throw new AppError("Invalid credentials", 401);
     }
 
     const token = sign({ id: user.id }, process.env.JWT_SECRET!, {
@@ -32,10 +33,8 @@ export const login: RequestHandler = async (req, res) => {
       },
       token,
     });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
+
+});
 
 type TokenPayload = {
   id: string;
@@ -43,20 +42,14 @@ type TokenPayload = {
   exp: number;
 };
 
-export const authMiddleware: RequestHandler = async (req, res, next) => {
+export const authMiddleware: RequestHandler = catchAsync (async (req, res, next) => {
   const { authorization } = req.headers;
-
   if (!authorization) {
     return res.status(401).json({ error: "Token not provided" });
   }
 
   const [, token] = authorization.split(" ");
-
-  try {
-    const decoded = verify(token, process.env.JWT_SECRET!) as TokenPayload;
+  const decoded = verify(token, process.env.JWT_SECRET!) as TokenPayload;
     (req as any).userId = decoded.id;
     return next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-};
+});
