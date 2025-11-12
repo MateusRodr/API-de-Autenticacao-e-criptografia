@@ -1,7 +1,7 @@
 import { container } from "tsyringe";
 import { PrismaClient } from "@prisma/client";
-import { UserRepository } from "../repository/user.repository";
-import { IUserRepository } from "../repository/interface/IUserrepository";
+import { UserRepository } from "../repositories/user.repository";
+import { IUserRepository } from "../repositories/interface/IUserrepository";
 import { UserService } from "../services/user.service";
 
 container.registerInstance(PrismaClient, new PrismaClient());

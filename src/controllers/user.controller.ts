@@ -3,7 +3,7 @@ import { RequestHandler } from "express";
 import { UserService } from "../services/user.service";
 import { hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
-import { catchAsync } from "../utils/catchasync";
+import { catchAsync } from "../shared/utils/catchasync";
 
 const userService = container.resolve(UserService);
 
@@ -23,7 +23,6 @@ export const createUser: RequestHandler = catchAsync (async (req, res, next) => 
       token,
     });
 });
-
 
 export const getAllUsers: RequestHandler = catchAsync (async (_req, res) => {
   const users = await userService.findAll();
@@ -46,6 +45,5 @@ export const deleteUser: RequestHandler = catchAsync (async (req, res, next) => 
   const { id } = req.params;
   await userService.delete(id);
   return res.status(204).send();
-
 });
 

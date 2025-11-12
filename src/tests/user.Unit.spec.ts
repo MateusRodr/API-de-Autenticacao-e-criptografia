@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { UserService } from '../services/user.service';
-import { User } from '../entity/user.entity';
+import { User } from '../entities/user.entity';
 
 const mockUserRepository = {
   create: jest.fn(),

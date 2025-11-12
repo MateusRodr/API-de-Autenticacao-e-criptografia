@@ -5,8 +5,8 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-} from "../controllers/user.Controller";
-import { login, authMiddleware } from "../controllers/auth.Controller";
+} from "../controllers/user.controller";
+import { login, authMiddleware } from "../controllers/auth.controller";
 
 /**
  * @swagger

@@ -2,9 +2,10 @@ import { RequestHandler } from "express";
 import { compare } from "bcrypt";
 import { sign, verify } from "jsonwebtoken";
 import { container } from "tsyringe";
-import { catchAsync } from "../utils/catchasync";
+import { catchAsync } from "../shared/utils/catchasync";
 import { UserService } from "../services/user.service";
 import { AppError } from "../shared/errors/appError";
+import { TokenNotProvidedError } from "../shared/errors/TokenNotProvidedError";
 
 const userService = container.resolve(UserService);
 
@@ -45,7 +46,7 @@ type TokenPayload = {
 export const authMiddleware: RequestHandler = catchAsync (async (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    return res.status(401).json({ error: "Token not provided" });
+    throw new TokenNotProvidedError("Token not provided" );
   }
 
   const [, token] = authorization.split(" ");

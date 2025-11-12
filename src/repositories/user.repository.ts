@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import { PrismaClient } from "@prisma/client";
-import { User } from "../entity/user.entity";
+import { User } from "../entities/user.entity";
 import { UserMapper } from "../mappers/user.mapper";
 import { IUserRepository } from "./interface/IUserrepository";
 

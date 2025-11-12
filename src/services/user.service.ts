@@ -1,12 +1,12 @@
 import { inject, injectable } from "tsyringe";
-import { User } from "../entity/user.entity";
+import { User } from "../entities/user.entity";
 import { 
   getUserSchema, 
   createUserSchema, 
   deleteUserSchema, 
   updateUserSchema 
 } from "../validations/user.validation";
-import { IUserRepository } from "../repository/interface/IUserrepository";
+import { IUserRepository } from "../repositories/interface/IUserrepository";
 import {UpdateUserDTO } from "../dtos/user.dto";
 import { ConflictError } from "../shared/errors/ConflictError";
 import { NotFoundError } from "../shared/errors/NotFoundError";
