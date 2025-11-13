@@ -47,7 +47,7 @@ Built with **Node.js**, **Express**, and **TypeScript**.
 
 ```bash
 # Clone the repository
-git clone https://github.com/mateusrodri12/token-api.git
+git clone https://github.com/MateusRodr/API-de-Autenticacao-e-criptografia.git
 cd token-api
 
 # Install dependencies

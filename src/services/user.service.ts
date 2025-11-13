@@ -45,6 +45,17 @@ async create(data: { name: string; email: string; password: string }) {
     return users;
   }
 
+  async findPaginated(page: number, limit: number){
+    const { data, total } = await this.userRepository.findPaginated(page, limit )
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total/limit)
+    }
+  }
+
   async findById(id: string) {
     const parsed = getUserSchema.parse({ params: { id } });
     const user = await this.userRepository.findById(parsed.params.id);

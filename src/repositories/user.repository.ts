@@ -19,6 +19,18 @@ export class UserRepository implements IUserRepository {
     return users.map(UserMapper.toDomain);
   }
 
+  async findPaginated(page: number, limit: number): Promise<{ data: User[]; total: number; }> {
+    const [prismaUsers, total] = await Promise.all([
+      this.prisma.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.user.count(),
+    ]);
+    const data = prismaUsers.map(UserMapper.toDomain);
+    return { data, total };
+  }
+
   async findById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { id } });
     return user ? UserMapper.toDomain(user) : null;

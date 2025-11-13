@@ -24,9 +24,24 @@ export const createUser: RequestHandler = catchAsync (async (req, res, next) => 
     });
 });
 
-export const getAllUsers: RequestHandler = catchAsync (async (_req, res) => {
-  const users = await userService.findAll();
-  return res.json({ users });
+export const getAllUsers: RequestHandler = catchAsync (async (req, res) => {
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10;
+  const result = await userService.findPaginated(page, limit);
+return res.json({
+  data: result.data,
+  pagination: {
+    total: result.total,
+    page: result.page,
+    limit,
+    totalPages: result.totalPages,
+    nextPage: result.page < result.totalPages ? result.page + 1 : null,
+    prevPage: result.page > 1 ? result.page - 1 : null,
+    nextUrl: result.page < result.totalPages ? `${req.baseUrl}?page=${result.page + 1}&limit=${limit}` : null,
+    prevUrl: result.page > 1 ? `${req.baseUrl}?page=${result.page - 1}&limit=${limit}` : null,
+  },
+});
+
 });
 
 export const getUserById: RequestHandler = catchAsync (async (req, res, next) => {
