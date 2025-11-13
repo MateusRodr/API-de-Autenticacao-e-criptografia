@@ -75,18 +75,32 @@ router.post("/auth/login", login);
 
 /**
  * @swagger
- * /users:
+ * /auth/users:
  *   get:
- *     summary: Get all users
+ *     summary: Get all users (with pagination)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number (default = 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of users per page (default = 10)
  *     responses:
  *       200:
- *         description: List of all users
+ *         description: Paginated list of users
  *       401:
  *         description: Unauthorized (missing or invalid token)
  */
+
 router.get("/auth/users", authMiddleware, getAllUsers);
 
 /**

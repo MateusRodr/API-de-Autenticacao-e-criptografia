@@ -23,7 +23,7 @@ Built with **Node.js**, **Express**, and **TypeScript**.
 ## ⚙️ Features
 
 - ✅ Register a new user  
-- ✅ List all users  
+- ✅ List all users  with pagination
 - ✅ Get user by ID  
 - ✅ Update existing user data  
 - ✅ Delete a user  
@@ -91,10 +91,39 @@ Interactive Swagger documentation is available at:
 |--------|--------|-------------|
 | `POST` | `/users` | Create a new user |
 | `POST` | `/auth/login` | Login to system |
-| `GET` | `/auth/users` | List all users |
+| `GET` | `/auth/users` | List all users (supports pagination) |
 | `GET` | `/auth/users/:id` | Get user by ID |
 | `PUT` | `/auth/users/:id` | Update user |
 | `DELETE` | `/auth/users/:id` | Delete user |
+
+**📄 Example — Paginated List
+**Example — List Users (Paginated)**
+
+Request:
+
+GET /auth/users?page=3&limit=10
+
+Response:
+```json
+{
+  "data": [
+    {
+      "id": "372e25df-aafa-46b3-9450-1e6818aa91c3",
+      "email": "gohan@school.com",
+      "name": "gohan"
+    }
+  ],
+  "pagination": {
+    "total": 50,
+    "page": 2,
+    "limit": 10,
+    "totalPages": 5,
+    "nextPage": 3,
+    "prevPage": 1
+  }
+}
+
+
 
 **Example — Create User**
 
