@@ -5,6 +5,7 @@ import { User } from '../entities/user.entity';
 const mockUserRepository = {
   create: jest.fn(),
   findAll: jest.fn(),
+  findPaginated: jest.fn(),
   findById: jest.fn(),
   findByEmail: jest.fn(),
   update: jest.fn(),

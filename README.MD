@@ -48,7 +48,7 @@ Built with **Node.js**, **Express**, and **TypeScript**.
 ```bash
 # Clone the repository
 git clone https://github.com/MateusRodr/API-de-Autenticacao-e-criptografia.git
-cd token-api
+cd token
 
 # Install dependencies
 npm install
@@ -101,7 +101,7 @@ Interactive Swagger documentation is available at:
 
 Request:
 
-GET /auth/users?page=3&limit=10
+`GET /auth/users?page=2&limit=10`
 
 Response:
 ```json
@@ -139,9 +139,13 @@ Request:
 Response:
 ```json
 {
+"user": {
   "id": "1",
   "name": "John Doe",
   "email": "john@example.com"
+  },
+  "token":
+"eyJhbGciOiJIUzI1NiIsInR"
 }
 ```
 
