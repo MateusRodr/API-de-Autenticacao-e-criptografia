@@ -7,7 +7,7 @@ import { catchAsync } from "../shared/utils/catchasync";
 
 const userService = container.resolve(UserService);
 
-export const createUser: RequestHandler = catchAsync (async (req, res, next) => {
+export const createUser: RequestHandler = catchAsync (async (req, res) => {
     const { name, email, password } = req.body;
     const hashedPassword = await hash(password, 8);
     const newUser = await userService.create({ name, email, password: hashedPassword });
@@ -44,19 +44,19 @@ return res.json({
 
 });
 
-export const getUserById: RequestHandler = catchAsync (async (req, res, next) => {
+export const getUserById: RequestHandler = catchAsync (async (req, res) => {
   const { id } = req.params;
   const user = await userService.findById(id);
   return res.json({ user });
 });
 
-export const updateUser: RequestHandler = catchAsync (async (req, res, next) => {
+export const updateUser: RequestHandler = catchAsync (async (req, res) => {
   const { id } = req.params;
   const updatedUser = await userService.update(id, req.body);
   return res.json({ user: updatedUser });
 });
 
-export const deleteUser: RequestHandler = catchAsync (async (req, res, next) => {
+export const deleteUser: RequestHandler = catchAsync (async (req, res) => {
   const { id } = req.params;
   await userService.delete(id);
   return res.status(204).send();
