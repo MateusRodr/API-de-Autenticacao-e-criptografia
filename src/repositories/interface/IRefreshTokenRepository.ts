@@ -1,5 +1,8 @@
+import { RefreshToken } from "../../entities/refreshToken.entity";
+
 export interface IRefreshTokenRepository {
-  create(userId: string, token: string, expiresIn: Date): Promise<void>;
-  find(token: string): Promise<{ userId: string; expiresIn: Date } | null>;
+  create(entity: RefreshToken): Promise<void>;
+  find(token: string): Promise<RefreshToken | null>;
   delete(token: string): Promise<void>;
 }
+
