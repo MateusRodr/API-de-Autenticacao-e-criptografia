@@ -20,35 +20,41 @@ export class RefreshTokenService {
     const expiresIn = new Date();
     expiresIn.setDate(expiresIn.getDate() + 7);
 
-    const entity = new RefreshToken(userId, token, expiresIn);
+    const entity = new RefreshToken({
+      id: crypto.randomUUID(),
+      userId,
+      token,
+      expiresIn
+    });
 
     await this.refreshTokenRepository.create(entity);
 
     return token;
   }
 
-  async refresh(data: any) {
-    const parsed = refreshTokenSchema.parse(data);
-
-    const refreshToken = parsed.body.refreshToken;
-
-    const stored = await this.refreshTokenRepository.find(refreshToken);
-
-    if (!stored) throw new AppError("Invalid refresh token", 401);
-
-    if (stored.expiresIn < new Date()) {
-      await this.refreshTokenRepository.delete(refreshToken);
-      throw new AppError("Refresh token expired", 401);
-    }
-
-    const newToken = sign(
-      { id: stored.userId },
-      process.env.JWT_SECRET!,
-      { expiresIn: "15m" }
-    );
-
-    return newToken;
+async refresh(refreshToken: string) {
+  if (!refreshToken) {
+    throw new AppError("Refresh token not provided", 400);
   }
+
+  const stored = await this.refreshTokenRepository.find(refreshToken);
+
+  if (!stored) throw new AppError("Invalid refresh token", 401);
+
+  if (stored.getExpiresIn() < new Date()) {
+    await this.refreshTokenRepository.delete(refreshToken);
+    throw new AppError("Refresh token expired", 401);
+  }
+
+  const newToken = sign(
+    { id: stored.getUserId() },
+    process.env.JWT_SECRET!,
+    { expiresIn: "15m" }
+  );
+
+  return newToken;
+}
+
 
   async logout(data: any) {
     const parsed = logoutSchema.parse(data);

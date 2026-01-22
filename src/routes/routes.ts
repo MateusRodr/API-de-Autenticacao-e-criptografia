@@ -7,6 +7,7 @@ import {
   deleteUser,
 } from "../controllers/user.controller";
 import { login, authMiddleware } from "../controllers/auth.controller";
+import { refreshTokenController } from "../controllers/refreshToken.controller";
 
 /**
  * @swagger
@@ -72,6 +73,30 @@ router.post("/users", createUser);
  *         description: Invalid credentials
  */
 router.post("/auth/login", login);
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token using a valid refresh token
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJh... (refresh token)
+ *     responses:
+ *       200:
+ *         description: New access token generated
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
+router.post("/auth/refresh", refreshTokenController);
 
 /**
  * @swagger

@@ -32,7 +32,7 @@ export const login: RequestHandler = catchAsync (async (req, res) => {
         name: user.getName(),
         email: user.getEmail(),
       },
-      token,
+      accessToken: token,
     });
 
 });
