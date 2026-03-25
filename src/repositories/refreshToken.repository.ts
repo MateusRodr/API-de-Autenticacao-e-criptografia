@@ -1,28 +1,32 @@
-import { PrismaClient } from "@prisma/client";
-import { inject, injectable } from "tsyringe";
-import { IRefreshTokenRepository } from "./interface/IRefreshTokenRepository";
+import { injectable } from "tsyringe";
+import { Repository } from "typeorm";
 import { RefreshToken } from "../entities/refreshToken.entity";
 import { RefreshTokenMapper } from "../mappers/refreshToken.mapper";
+import { RefreshTokenORM } from "../infra/database/typeorm/entities/RefreshTokenORM";
+import { AppDataSource } from "../infra/database/typeorm/data-source";
 
 @injectable()
-export class RefreshTokenRepository implements IRefreshTokenRepository {
-  constructor(@inject(PrismaClient) private prisma: PrismaClient) {}
+export class RefreshTokenRepository {
+  private repo: Repository<RefreshTokenORM>;
+
+  constructor() {
+    this.repo = AppDataSource.getRepository(RefreshTokenORM);
+  }
 
   async create(entity: RefreshToken): Promise<void> {
-    const data = RefreshTokenMapper.toPrisma(entity);
-    await this.prisma.refreshToken.create({ data });
+    const orm = RefreshTokenMapper.toORM(entity);
+    await this.repo.save(orm);
   }
 
   async find(token: string): Promise<RefreshToken | null> {
-    const result = await this.prisma.refreshToken.findUnique({
+    const result = await this.repo.findOne({
       where: { token },
     });
+
     return result ? RefreshTokenMapper.toDomain(result) : null;
   }
 
   async delete(token: string): Promise<void> {
-    await this.prisma.refreshToken.deleteMany({
-      where: { token },
-    });
+    await this.repo.delete({ token });
   }
 }

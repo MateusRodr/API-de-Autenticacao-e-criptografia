@@ -1,22 +1,24 @@
 import { User } from "../entities/user.entity";
-import { Prisma, User as PrismaUser } from "@prisma/client"
+import { UserORM } from "../infra/database/typeorm/entities/user.entityORM";
 
 export class UserMapper {
-    static toDomain(raw: PrismaUser): User {
-        return new User({
-            id: raw.id,
-            email: raw.email,
-            name: raw.name,
-            password: raw.password
-        });
-    }
+  static toDomain(raw: UserORM): User {
+    return new User({
+      id: raw.id,
+      email: raw.email,
+      name: raw.name,
+      password: raw.password,
+    });
+  }
 
-    static toPrisma(user: User): Prisma.UserCreateInput {
-        return {
-            id: user.id!,
-            email: user.getEmail(),
-            name: user.getName(),
-            password: user.getPassword()
-        };
-    }
+  static toORM(user: User): UserORM {
+    const orm = new UserORM();
+
+    orm.id = user.id!;
+    orm.email = user.getEmail();
+    orm.name = user.getName();
+    orm.password = user.getPassword();
+
+    return orm;
+  }
 }

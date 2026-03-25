@@ -17,6 +17,7 @@
     "swagger-ui-express": "^5.0.1",
     "tsc": "^2.0.4",
     "tsyringe": "^4.10.0",
+    "typeorm": "^0.3.28",
     "zod": "^4.1.12"
   },
   "devDependencies": {

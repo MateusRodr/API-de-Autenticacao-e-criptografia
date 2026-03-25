@@ -1,55 +1,57 @@
 import { injectable } from "tsyringe";
-import { PrismaClient } from "@prisma/client";
 import { User } from "../entities/user.entity";
+import { Repository } from "typeorm";
 import { UserMapper } from "../mappers/user.mapper";
 import { IUserRepository } from "./interface/IUserrepository";
+import { UserORM } from "../infra/database/typeorm/entities/user.entityORM";
+import { AppDataSource } from "../infra/database/typeorm/data-source";
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  constructor(private prisma: PrismaClient) {}
+    private repo: Repository<UserORM>;
+  constructor() {
+    this.repo = AppDataSource.getRepository(UserORM);
+  }
 
   async create(user: User): Promise<User> {
-    const data = UserMapper.toPrisma(user);
-    const created = await this.prisma.user.create({ data });
+    const data = UserMapper.toORM(user);
+    const created = await this.repo.save(data);
     return UserMapper.toDomain(created);
   }
 
   async findAll(): Promise<User[]> {
-    const users = await this.prisma.user.findMany();
+    const users = await this.repo.find();
     return users.map(UserMapper.toDomain);
   }
 
   async findPaginated(page: number, limit: number): Promise<{ data: User[]; total: number; }> {
-    const [prismaUsers, total] = await Promise.all([
-      this.prisma.user.findMany({
+    const [user, total] = await Promise.all([
+      this.repo.find({
         skip: (page - 1) * limit,
         take: limit,
       }),
-      this.prisma.user.count(),
+      this.repo.count(),
     ]);
-    const data = prismaUsers.map(UserMapper.toDomain);
+    const data = user.map(UserMapper.toDomain);
     return { data, total };
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.repo.findOne({ where: { id } });
     return user ? UserMapper.toDomain(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> { 
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.repo.findOne({ where: { email } });
     return user ? UserMapper.toDomain(user) : null;
   }
 
   async update(user: User): Promise<User> {
-    const updatedUser = await this.prisma.user.update({
-      where: { id: user.id },
-      data: UserMapper.toPrisma(user),
-    });
-    return UserMapper.toDomain(updatedUser);
+    const updatedUser = await this.repo.update({ id: user.id }, UserMapper.toORM(user));
+    return UserMapper.toDomain(updatedUser.raw);
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+    await this.repo.delete({ id });
   }
 }

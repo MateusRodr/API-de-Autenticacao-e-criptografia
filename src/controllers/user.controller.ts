@@ -1,11 +1,10 @@
 import { container } from "tsyringe";
 import { RequestHandler } from "express";
 import { UserService } from "../services/user.service";
-import { compare, hash } from "bcrypt";
+import { hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { catchAsync } from "../shared/utils/catchasync";
 import { RefreshTokenService } from "../services/refreshToken.service";
-import { AppError } from "../shared/errors/appError";
 
 const userService = container.resolve(UserService);
 const refreshTokenService = container.resolve(RefreshTokenService);

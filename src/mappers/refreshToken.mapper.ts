@@ -1,20 +1,24 @@
 import { RefreshToken } from "../entities/refreshToken.entity";
+import { RefreshTokenORM } from "../infra/database/typeorm/entities/RefreshTokenORM";
 
 export class RefreshTokenMapper {
-    static toPrisma(raw: RefreshToken) {
-        return {
-            id: raw.getId(),
-            token: raw.getToken(),
-            userId: raw.getUserId(),
-            expiresIn: raw.getExpiresIn(),
-        };
-    }
-    static toDomain(raw:any): RefreshToken {
-        return new RefreshToken({
-            id: raw.id,
-            token: raw.token,
-            userId: raw.userId,
-            expiresIn: raw.expiresIn,
-        })
-    }
+  static toORM(refreshToken: RefreshToken): RefreshTokenORM {
+    const orm = new RefreshTokenORM();
+
+    orm.id = refreshToken.getId();
+    orm.token = refreshToken.getToken();
+    orm.userId = refreshToken.getUserId();
+    orm.expiresIn = refreshToken.getExpiresIn();
+
+    return orm;
+  }
+
+  static toDomain(raw: RefreshTokenORM): RefreshToken {
+    return new RefreshToken({
+      id: raw.id,
+      token: raw.token,
+      userId: raw.userId,
+      expiresIn: raw.expiresIn,
+    });
+  }
 }
