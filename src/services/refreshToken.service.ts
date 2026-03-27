@@ -55,7 +55,6 @@ async refresh(refreshToken: string) {
   return newToken;
 }
 
-
   async logout(data: any) {
     const parsed = logoutSchema.parse(data);
 
