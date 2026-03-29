@@ -1,10 +1,9 @@
 import { RequestHandler } from "express";
 import { container } from "tsyringe";
 import { catchAsync } from "../shared/utils/catchasync";
-import { RefreshTokenService } from "../services/refreshToken.service";
+import { RefreshTokenUseCase} from "../modules/auth/usecases/RefreshTokenUseCase/RefreshTokenUserUseCase";
 import { AppError } from "../shared/errors/appError";
 
-const refreshTokenService = container.resolve(RefreshTokenService);
 
 export const refreshTokenController: RequestHandler = catchAsync(async (req, res) => {
   const { refreshToken } = req.body;
@@ -13,7 +12,8 @@ export const refreshTokenController: RequestHandler = catchAsync(async (req, res
     throw new AppError("Refresh token not provided", 400);
   }
 
-  const newAccessToken = await refreshTokenService.refresh(refreshToken);
+  const useCase = container.resolve(RefreshTokenUseCase);
+  const newAccessToken = await useCase.execute(refreshToken);
 
   return res.json({
     accessToken: newAccessToken,

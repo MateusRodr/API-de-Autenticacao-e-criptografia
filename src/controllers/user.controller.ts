@@ -3,13 +3,11 @@ import { RequestHandler } from "express";
 import { hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { catchAsync } from "../shared/utils/catchasync";
-import { RefreshTokenService } from "../services/refreshToken.service";
 import { CreateUserUseCase } from "../modules/user/usecases/createUser/CreateUserUseCase";
 import { FindUsersPaginatedUseCase } from "../modules/user/usecases/findUsersPaginated/FindUsersPaginatedUseCase";
 import { FindUserByIdUseCase } from "../modules/user/usecases/findUserById/FindUserByIdUseCase";
 import { UpdateUserUseCase } from "../modules/user/usecases/updateUser/UpdateUserUseCase";
 import { DeleteUserUseCase } from "../modules/user/usecases/deleteUser/DeleteUserUseCase";
-const refreshTokenService = container.resolve(RefreshTokenService);
 
 export const createUser: RequestHandler = catchAsync (async (req, res) => {
     const { name, email, password } = req.body;
